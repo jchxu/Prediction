@@ -49,13 +49,14 @@ splitlist = ['RB1601','2016-03-15','RB1610','2016-08-20','RB1701','2016-12-01','
     #SourceFile[splitlist[i]] = file
 file = pd.read_csv('RB1601.csv')
 print(file.info())
-print(file.loc[0:10])
+#print(file.loc[0:10])
 DTlist = file['DateTime']
-print(type(DTlist))
-for i in DTlist:
-    time1 =  datetime.datetime.strptime(i,'%Y-%m-%d %H:%M:%S')
-    time2 =  datetime.datetime.strptime('2016-03-15','%Y-%m-%d')
-    if (time1 < time2):
-        print(i)
-        break
+#print(type(DTlist))
+print(file.loc[file['DateTime'] < "2016-03-15 00:00:00"])
+#for i in DTlist:
+#    time1 =  datetime.datetime.strptime(i,'%Y-%m-%d %H:%M:%S')
+#    time2 =  datetime.datetime.strptime('2016-03-15','%Y-%m-%d')
+#    if (time1 < time2):
+#        print(i)
+#        break
 #print(file[file[DateTime] < datetime.datetime.strptime('2016-03-15','%Y-%m-%d')])
