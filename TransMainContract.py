@@ -5,8 +5,9 @@ import numpy as np
 import datetime
 import pandas as pd
 
+#start = datetime.datetime.now()
 #file = xlrd.open_workbook("RB_2016_2017.xlsx")
-splitlist = ['RB1601','2016-03-15','RB1610','2016-08-20','RB1701','2016-12-01','RB1705','2017-03-15','RB1710','2017-08-20','RB1801','2017-12-01','RB1805']
+splitlist = ['RB1605','2016-03-15','RB1610','2016-08-20','RB1701','2016-12-01','RB1705','2017-03-15','RB1710','2017-08-20','RB1801','2017-12-01','RB1805']
 
 ### 获取所有数据的分列表，品种/时间/最新价格
 #ContractID = []
@@ -35,28 +36,23 @@ splitlist = ['RB1601','2016-03-15','RB1610','2016-08-20','RB1701','2016-12-01','
 #    print(ContractID[i],DateTime[i],Price[i],sep=',',file=FileDict[ContractID[i]])
 #for i in range(0,len(UniqueContract)):
 #    FileDict[UniqueContract[i]].close()
+#end = datetime.datetime.now()
+#print((end-start).seconds)
 
 ### 根据列表拆分并组合文件
-#file = open('MainContract.csv', mode='w')
-#DateTime = [datetime.datetime(2017, 12, 29, 14, 37), datetime.datetime(2017, 12, 29, 14, 38), datetime.datetime(2017, 12, 29, 14, 39), datetime.datetime(2017, 12, 29, 14, 40), datetime.datetime(2017, 12, 29, 14, 41), datetime.datetime(2017, 12, 29, 14, 42), datetime.datetime(2017, 12, 29, 14, 43), datetime.datetime(2017, 12, 29, 14, 44), datetime.datetime(2017, 12, 29, 14, 45), datetime.datetime(2017, 12, 29, 14, 46), datetime.datetime(2017, 12, 29, 14, 47), datetime.datetime(2017, 12, 29, 14, 48), datetime.datetime(2017, 12, 29, 14, 49), datetime.datetime(2017, 12, 29, 14, 50), datetime.datetime(2017, 12, 29, 14, 51), datetime.datetime(2017, 12, 29, 14, 52), datetime.datetime(2017, 12, 29, 14, 53), datetime.datetime(2017, 12, 29, 14, 54), datetime.datetime(2017, 12, 29, 14, 55), datetime.datetime(2017, 12, 29, 14, 56), datetime.datetime(2017, 12, 29, 14, 57), datetime.datetime(2017, 12, 29, 14, 58), datetime.datetime(2017, 12, 29, 14, 59), datetime.datetime(2017, 12, 29, 15, 0)]
-#date_time = datetime.datetime.strptime(splitlist[-2],'%Y-%m-%d')
-#file.close()
-
-#SourceFile = {}
-#for i in range(0, len(splitlist),2):
-#    print(splitlist[i])
-    #file = open(splitlist[i]+'.csv', mode='r')
-    #SourceFile[splitlist[i]] = file
-file = pd.read_csv('RB1601.csv')
-print(file.info())
-#print(file.loc[0:10])
-DTlist = file['DateTime']
-#print(type(DTlist))
-print(file.loc[file['DateTime'] < "2016-03-15 00:00:00"])
-#for i in DTlist:
-#    time1 =  datetime.datetime.strptime(i,'%Y-%m-%d %H:%M:%S')
-#    time2 =  datetime.datetime.strptime('2016-03-15','%Y-%m-%d')
-#    if (time1 < time2):
-#        print(i)
-#        break
-#print(file[file[DateTime] < datetime.datetime.strptime('2016-03-15','%Y-%m-%d')])
+file = open('MainContract.csv', mode='w')
+print('ContractID','DateTime','LastPX',sep=',',file=file)
+file.close()
+for i in range(0,len(splitlist),2):
+    if i == 0:
+        csvfile = pd.read_csv(splitlist[i]+'.csv')
+        data = csvfile.loc[csvfile['DateTime'] < (splitlist[i+1]+" 00:00:00")]
+        data.to_csv("MainContract.csv", header=False, index=False, mode='a')
+    elif i < (len(splitlist)-1):
+        csvfile = pd.read_csv(splitlist[i] + '.csv')
+        data = csvfile.loc[((splitlist[i-1] + " 00:00:00") <= csvfile['DateTime']) & (csvfile['DateTime'] < (splitlist[i+1] + " 00:00:00"))]
+        data.to_csv("MainContract.csv", header=False, index=False, mode='a')
+    elif i == (len(splitlist)-1):
+        csvfile = pd.read_csv(splitlist[i] + '.csv')
+        data = csvfile.loc[(splitlist[i-1] + " 00:00:00") <= csvfile['DateTime']]
+        data.to_csv("MainContract.csv", header=False, index=False, mode='a')
